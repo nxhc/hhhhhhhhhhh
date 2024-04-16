@@ -4191,4 +4191,5 @@ do
         getgenv().InventoryConnections.CharacterAdded:Disconnect();
         getgenv().InventoryConnections.CharacterAdded = nil;
     end;
-    getgenv().InventoryConnections.CharacterAdded = client.CharacterAdded:Connect(InventoryChanger.Functions.CharacterAdded);    InventoryChanger.Functions.CharacterAdded(client.Character);end;
+    getgenv().InventoryConnections.CharacterAdded = client.CharacterAdded:Connect(InventoryChanger.Functions.CharacterAdded);    InventoryChanger.Functions.CharacterAdded(client.Character);
+end;

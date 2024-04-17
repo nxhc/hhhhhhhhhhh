@@ -1,0 +1,113 @@
+local function SetCharacterAppearance(character)
+    if not character then return end
+
+    character:WaitForChild("RightLowerLeg").MeshId = "902942093"
+    character:WaitForChild("RightLowerLeg").Transparency = 1
+
+    character:WaitForChild("RightUpperLeg").MeshId = "http://www.roblox.com/asset/?id=902942096"
+    character:WaitForChild("RightUpperLeg").TextureID = "http://roblox.com/asset/?id=902843398"
+
+    character:WaitForChild("RightFoot").MeshId = "902942089"
+    character:WaitForChild("RightFoot").Transparency = 1
+end
+
+local function HideFace()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local head = character:FindFirstChild("Head")
+        if head then
+            local face = head:FindFirstChildOfClass("Decal")
+            if face then
+                face.Transparency = 1
+            end
+        end
+    end
+end
+
+local function HideHead()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local head = character:FindFirstChild("Head")
+        if head then
+            head.Transparency = 1
+            for _, decal in ipairs(head:GetChildren()) do
+                if decal:IsA("Decal") then
+                    decal.Transparency = 1
+                end
+            end
+        end
+    end
+end
+
+local function ShowHead()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local head = character:FindFirstChild("Head")
+        if head then
+            head.Transparency = 0
+            for _, decal in ipairs(head:GetChildren()) do
+                if decal:IsA("Decal") then
+                    decal.Transparency = 0
+                end
+            end
+        end
+    end
+end
+
+local function OnCharacterAdded(character)
+    SetCharacterAppearance(character)
+    HideFace()
+    HideHead()
+
+    character:WaitForChild("Humanoid").Died:Connect(function()
+        HideFace()
+        HideHead()
+    end)
+end
+
+local lastCharacterHeadState = nil
+local lastCharacterFaceState = nil
+game.Players.LocalPlayer.CharacterRemoving:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local head = character:FindFirstChild("Head")
+        if head then
+            lastCharacterHeadState = {
+                Transparency = head.Transparency,
+                DecalsTransparency = {}
+            }
+            for _, decal in ipairs(head:GetChildren()) do
+                if decal:IsA("Decal") then
+                    lastCharacterHeadState.DecalsTransparency[decal] = decal.Transparency
+                end
+            end
+            local face = head:FindFirstChildOfClass("Decal")
+            if face then
+                lastCharacterFaceState = {
+                    Transparency = face.Transparency
+                }
+            end
+        end
+    end
+end)
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    OnCharacterAdded(character)
+    if lastCharacterHeadState then
+        local head = character:FindFirstChild("Head")
+        if head then
+            head.Transparency = lastCharacterHeadState.Transparency
+            for decal, transparency in pairs(lastCharacterHeadState.DecalsTransparency) do
+                decal.Transparency = transparency
+            end
+        end
+    end
+    local face = character:FindFirstChild("Head") and character.Head:FindFirstChildOfClass("Decal")
+    if face and lastCharacterFaceState then
+        face.Transparency = lastCharacterFaceState.Transparency
+    end
+end)
+
+if game.Players.LocalPlayer.Character then
+    OnCharacterAdded(game.Players.LocalPlayer.Character)
+end
